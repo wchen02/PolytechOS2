@@ -2,4 +2,4 @@ CC = javac
 all: 
 	$(CC) *.java
 clean:
-	rm *.class *.*~ 
+	rm *.class *.*~ #*.* 
