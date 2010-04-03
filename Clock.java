@@ -31,16 +31,29 @@ public class Clock {
   }
 
   public void run() {
+    int memorycycle = 1;
+    boolean getNextprocess = true;
     while (processList.size() > 0) {
-      running = processList.get(0);
+      running = processList.get(0); // this has to change ! update Note to self
       processList.remove(0); // Take O(N)
       int tmpBurst = running.getBurst();
 
       while (tmpBurst > 0) {
         --tmpBurst;
       }
+      // page management
+      //firs check if page is in pageTable
+      //pseudo code
+      /*if the table contains the page with 
+        the running process current reference, 
+        then don't do anything to the running process and run him again,
+        else calculate I/O, update this penalty time and put him in the back of the list
+        
+        check if there is a free page to evict, and basically run the clock algorithm here.
 
-      // page faults
+        also, for loop through all the processes running and update their penalty time.        
+       */
+      
 
 
       if (running.getNumOfRef() > 0) {
@@ -91,7 +104,7 @@ public class Clock {
           ArrayList<Reference> refs = new ArrayList<Reference>();
           while (scan.hasNextLine()) {
             String line = scan.nextLine();
-            if(line.isEmpty()) continue;
+            if(line.isEmpty()) continue; // this means is an empty line, ignore.
             if(DEBUG_OUT){
               System.out.println("\nline: "+line+
                                  "\nsizeOfLine: "+line.length()
