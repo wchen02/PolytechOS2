@@ -21,7 +21,7 @@ public class Clock {
 
   public static void main(String... arg) {
     Clock clock = new Clock();
-    //clock.run();                
+    clock.run();                
   }
 
   public Clock() {
@@ -82,15 +82,26 @@ public class Clock {
           tmpPid = scan.nextInt(); // pid
           tmpBurst = scan.nextInt(); // burst
           tmpNumOfRefs = scan.nextInt();  // number of references
+          if(DEBUG_OUT){
+            System.out.println("\npid: "+tmpPid+
+                               "\nburst: "+tmpBurst+
+                               "\nnum of refs: "+ tmpNumOfRefs
+                               );
+          }
 
           ArrayList<Reference> refs = new ArrayList<Reference>();
           while (scan.hasNextLine()) {
             String line = scan.nextLine();
-            if(DEBUG_OUT)
-              System.out.println(line); // output for debug 
+            if(line.isEmpty()) continue;
+            if(DEBUG_OUT){
+              System.out.println("\nline: "+line+
+                                 "\nsizeOfLine: "+line.length()
+                                 ); // output for debug 
+            
+            }
             Scanner scanLine = new Scanner(line);
             Reference reference = new Reference(scanLine.nextInt(), // address
-                                                (scanLine.next().equals("R")) // read or write
+                                                (scanLine.hasNext("R")) // read or write
                                                 );
             refs.add(reference);
             
@@ -120,10 +131,10 @@ public class Clock {
       while (scan.hasNextLine()) {
         line = scan.nextLine();
         int indexEquals = line.indexOf("=");
-        value = line.substring(indexEquals + 1);
         arg = line.substring(0, indexEquals);
+        value = line.substring(indexEquals + 1);
         if(DEBUG_OUT){
-          System.out.println("in readSetting()\nvalue: "+value+"\narg: "+arg);
+          System.out.println("in readSetting()\nargnument: "+arg+"\nvalue: "+value);
         }
         setValue(arg, value);
       }
