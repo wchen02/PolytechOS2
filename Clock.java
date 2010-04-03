@@ -78,7 +78,6 @@ public class Clock {
       for (int i = 0; i < numOfProcesses; ++i) {
         if (scan.hasNextLine()) {
           int tmpPid, tmpBurst, tmpNumOfRefs;
-          //*************************************** problem here, we are not ignoring whitespaces. ! java !
           tmpPid = scan.nextInt(); // pid
           tmpBurst = scan.nextInt(); // burst
           tmpNumOfRefs = scan.nextInt();  // number of references
