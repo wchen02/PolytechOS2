@@ -22,6 +22,8 @@ public class PageTable {
     }
 
     public Page getPageAtIndex(int index) {
+        assert index > 0 && index < 1000;
+        System.out.println("index is: "+index);
         return pageTable.get(index);
     }
 

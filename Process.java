@@ -5,43 +5,70 @@ import java.lang.*;
 
 public class Process {
 
-  private int pid, burst, numOfRef, penaltyTime;
-  private ArrayList<Reference> refs;
+    private int pid, burst, numOfRef, penaltyTime;
+    private ArrayList<Reference> refs;
 
-  public int getPid() {
-    return pid;
-  }
-
-  public int getBurst() {
-    return burst;
-  }
-
-  public int getNumOfRef() {
-    return numOfRef;
-  }
-
-  public void decNumOfRef() {
-    --numOfRef;
-    assert (numOfRef >= 0);
-  }
-  public void setPenaltyTime(int penalty){
-    penaltyTime = penalty;
-    if(penaltyTime < 0 )penalty = 0; // don't allow it to be negative, it doesn't make sense
-  }
-  public Reference getReference(int index){
-    if(index <= refs.size() ){
-      return refs.get(index);
+    public Reference popRef() {
+        Reference top = null;
+        if (refs.size() > 0) {
+            top = refs.get(0);
+            refs.remove(0);
+        }
+        assert (top != null);
+        return top;
     }
-    System.out.println("Index out of range ! index has to be less than: "+refs.size());
-    return new Reference();     // dummy reference as error code.
-  }
-  public int getPenaltyTime(){ return penaltyTime;}
 
-  public Process(int pid, int burst, int numOfRef, ArrayList<Reference> refs) {
-    this.pid = pid;
-    this.burst = burst;
-    this.numOfRef = numOfRef;
-    this.refs = refs;
-    penaltyTime = 0;            // this is the sum of missPenalty + dirtyPagePenalty
-  }
+    public Reference topRef() {
+        Reference top = null;
+        if (refs.size() > 0) {
+            top = refs.get(0);
+        }
+        assert (top != null);
+        return top;
+    }
+
+    public int getPid() {
+        return pid;
+    }
+
+    public int getBurst() {
+        return burst;
+    }
+
+    public int getNumOfRef() {
+        return numOfRef;
+    }
+
+    public void decNumOfRef() {
+        --numOfRef;
+        assert (numOfRef >= 0);
+    }
+
+    public void decPenaltyTime() {
+        --penaltyTime;
+        if (penaltyTime < 0) {
+            penaltyTime = 0; // don't allow it to be negative, it doesn't make sense
+        }
+    }
+ public void setPenaltyTime(int set) {
+        penaltyTime = set;
+        if (penaltyTime < 0) {
+            penaltyTime = 0; // don't allow it to be negative, it doesn't make sense
+        }
+    }
+    public Reference getReference(int index) {
+        return refs.get(index);
+    }
+
+    public int getPenaltyTime() {
+        return penaltyTime;
+    }
+
+    public Process(int pid, int burst, int numOfRef, ArrayList<Reference> refs) {
+        this.pid = pid;
+        this.burst = burst;
+        this.numOfRef = numOfRef;
+        this.refs = refs;
+        penaltyTime = 0;            // this is the sum of missPenalty + dirtyPagePenalty
+    }
 }

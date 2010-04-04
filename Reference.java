@@ -8,4 +8,8 @@ public class Reference {
         address = addr;
         readOrWrite = rw;
     }
+
+    public int getAddress(){
+        return address;
+    }
 }
