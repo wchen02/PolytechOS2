@@ -1,3 +1,7 @@
+package hw02;
+
+import java.util.ArrayList;
+
 public class ProcessControlBlock{
 
   private int pid, burst, numOfRef, penaltyTime;

@@ -1,3 +1,5 @@
+package hw02;
+
 
 import java.util.ArrayList;
 
@@ -5,9 +7,11 @@ public class PageTable {
 
   public PageTable(int size) {
     pageTable = new ArrayList<Page>(size);
+    for(int i = 0; i < size; ++i )
+        pageTable.add(new Page(i));
   }
   public PageTable(){
-    this(10);
+    this(8);
   }
 
   public void addPage(Page page) {

@@ -1,3 +1,5 @@
+package hw02;
+
 public class Page {
 
   public Page(int fn) {

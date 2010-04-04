@@ -1,8 +1,9 @@
+package hw02;
+
 
 import java.util.*;
 import java.util.ArrayList;
-import java.lang.*;
-import java.io.File;
+
 import java.io.*;
 
 public class Clock {
@@ -18,7 +19,7 @@ public class Clock {
     private Process running = null;
     private PageTable pageTable = null;
     private boolean[] bitmap;
-    private ArrayList<PageTable.Page> clockStruct;
+    private ArrayList<Page> clockStruct;
 
     public static void main(String... arg) {
         Clock clock = new Clock();
@@ -28,7 +29,7 @@ public class Clock {
     public Clock() {
         readSettings("MemoryManagement.txt");
         bitmap = new boolean[frameCount];
-        clockStruct = new ArrayList<PageTable.Page>(frameCount);
+        clockStruct = new ArrayList<Page>(frameCount);
         for (int i = 0; i < bitmap.length; ++i) {
             bitmap[i] = false; //false is free
         }
@@ -57,8 +58,8 @@ public class Clock {
             running = processList.get(0); // this has to change ! update Note to self
             processList.remove(0); // Take O(N)
 
-            System.out.println("Running " + running.getPid());
-            while (running.topRef() != null) {
+            System.out.println("Running " + running.pcb.getPid());
+            while (running.pcb.topRef() != null) {
                 if (DEBUG) {
                     System.out.print("Clock: ");
                     for (int i = 0; i < clockStruct.size(); ++i) {
@@ -70,28 +71,28 @@ public class Clock {
                     }
                     System.out.println();
                 }
-                VA = running.topRef().getAddress();
-                pageNumber = running.topRef().getAddress() / pageSize;
-                offset = running.topRef().getAddress() % pageSize;
-                System.out.print("R/W: " + ((running.topRef().getReadOrWrite()) ? "R" : "W") + "; VA: " + VA + "; Page: " + pageNumber + "; Offset: " + offset + "; ");
+                VA = running.pcb.topRef().getAddress();
+                pageNumber = running.pcb.topRef().getAddress() / pageSize;
+                offset = running.pcb.topRef().getAddress() % pageSize;
+                System.out.print("R/W: " + ((running.pcb.topRef().getReadOrWrite()) ? "R" : "W") + "; VA: " + VA + "; Page: " + pageNumber + "; Offset: " + offset + "; ");
 
-                if (checkRefIfValid(running.topRef())) {
-                    int tmpBurst = running.getBurst();
+                if (checkRefIfValid(running.pcb.topRef())) {
+                    int tmpBurst = running.pcb.getBurst();
                     while (tmpBurst > 0) {
                         --tmpBurst;
                         for (int i = 0; i < processList.size(); ++i) {
                             Process tmp = processList.get(i);
-                            tmp.decPenaltyTime(); // nvr goes below 0
+                            tmp.pcb.decPenaltyTime(); // nvr goes below 0
                             processList.set(i, tmp);
                         }
                     }
                     System.out.print("Hit; ");
                 } else {
                     int freePageIndex = nextFreePage();
-                    PageTable.Page tmpPage = pageTable.new Page(running.topRef().getAddress() >> 6);
+                    Page tmpPage =new Page(running.pcb.topRef().getAddress() >> 6);
                     if (freePageIndex >= 0) {
                         clockStruct.add(tmpPage);
-                        running.setPenaltyTime(missPenalty);
+                        running.pcb.setPenaltyTime(missPenalty);
                         bitmap[freePageIndex] = true; // now its occupy, not free
                         System.out.print("Free; ");
                     } else {
@@ -102,14 +103,14 @@ public class Clock {
                             if (clockStruct.get(i).referenced == false) {
                                 clockStruct.set(i, tmpPage);
                                 isDirty = true;
-                                running.setPenaltyTime(missPenalty);
+                                running.pcb.setPenaltyTime(missPenalty);
                                 System.out.print("Clean; ");
                                 break;
                             }
                         }
                         if (isDirty) {
                             clockStruct.set(0, tmpPage);
-                            running.setPenaltyTime(missPenalty + dirtyPagePenalty);
+                            running.pcb.setPenaltyTime(missPenalty + dirtyPagePenalty);
                             System.out.print("Dirty; ");
                         }
                     }
@@ -121,13 +122,13 @@ public class Clock {
                 System.out.print("Frame: " + frameNumber + "; PA: " + PA);
 
                 System.out.println();
-                running.popRef();// we no longer need this.
+                running.pcb.popRef();// we no longer need this.
                 memoryCycle++;
                 if (nextProcess) {
                     break;
                 }
             }
-            if (running.topRef() == null) {
+            if (running.pcb.topRef() == null) {
                 continue;
             }
             // move to the back of the queue
@@ -195,7 +196,7 @@ public class Clock {
                                 );
                         refs.add(reference);
                     }
-                    processList.add(new Process(tmpPid, tmpBurst, tmpNumOfRefs, refs));
+                    processList.add(new Process(new PageTable(bitmap.length),new ProcessControlBlock(tmpPid, tmpBurst, tmpNumOfRefs, refs)));
                 }
             }
         } catch (java.io.FileNotFoundException e) {
@@ -256,7 +257,7 @@ public class Clock {
     }
 
     boolean checkIfReady(Process process) { // true if no penalty
-        return (process.getPenaltyTime() == 0);
+        return (process.pcb.getPenaltyTime() == 0);
     }
 
     boolean checkRefIfValid(Reference ref) {

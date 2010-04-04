@@ -1,7 +1,6 @@
+package hw02;
 
-import java.util.*;
-import java.util.ArrayList;
-import java.lang.*;
+
 
 public class Process {
   public PageTable pt;          // future improvement, use actual encapsulation !
@@ -11,8 +10,5 @@ public class Process {
     this.pt = pt;
     this.pcb = pcb;
   }
-  public Process(){
-    pt = new PageTable();
-    pcb = new ProcessControlBlock();
-  }
+
 }
