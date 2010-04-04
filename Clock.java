@@ -8,7 +8,7 @@ import java.io.*;
 public class Clock {
 
     private static boolean DEBUG = true; // for sterling algor.
-    private boolean DEBUG_OUT = true;    // for internal use, comment to false
+    private boolean DEBUG_OUT = false;    // for internal use, comment to false
     private int missPenalty = 0,
             dirtyPagePenalty = 0, pageSize = 0,
             vaBits = 0, paBits = 0, frameCount = 0,
@@ -37,8 +37,20 @@ public class Clock {
     }
 
     public void run() {
+        System.err.println();
         int memoryCycle = 1;
-        boolean getNextprocess = true;
+
+        System.out.println("References file: " + referenceFile
+                         + "\nPage size: " + pageSize
+                         + "\nVA size: " + vaBits
+                         + "\nPA size: " + paBits
+                         + "\nMiss penalty: " + missPenalty
+                         + "\nDirty page penalty: " + dirtyPagePenalty
+                         + "\nDebug: " + DEBUG
+                         + "\nFrame Count: " + frameCount
+                         + "\n"
+                         + "\nRunning Clock\n========");
+
         while (processList.size() > 0) {
             while (!checkIfReady(processList.get(0))) {
                 /* set top process to the next process and
@@ -51,6 +63,7 @@ public class Clock {
             running = processList.get(0); // this has to change ! update Note to self
             processList.remove(0); // Take O(N)
 
+            System.out.println("Running " + running.getPid());
             while (running.topRef()!=null && checkRefIfValid(running.topRef())) {
                 int tmpBurst = running.getBurst();
                 while (tmpBurst > 0) {
@@ -61,6 +74,23 @@ public class Clock {
                         processList.set(i, tmp);
                     }
                 }
+                if(DEBUG){
+                    System.out.print("Clock: ");
+                    for (int i = 0; i < clockStruct.size(); ++i) {
+                        System.out.print(i + " ");
+                    }
+                    System.out.print("Free frames: ");
+                    for (int i = 0; i < bitmap.length; ++i) {
+                        System.out.print((!bitmap[i]) ? i + " " : "");
+                    }
+                    System.out.println();
+                }
+                
+                System.out.print("R/W: " + (( running.topRef().getReadOrWrite() )?"R":"W")
+                        + "; VA: " + running.topRef().getAddress()/pageSize 
+                        + "; Offset: " + running.topRef().getAddress()%pageSize
+                        + "; ");
+                System.out.println();
                 memoryCycle++;
                 running.popRef();
             }
