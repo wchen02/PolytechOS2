@@ -87,7 +87,8 @@ public class Clock {
                 }
                 
                 System.out.print("R/W: " + (( running.topRef().getReadOrWrite() )?"R":"W")
-                        + "; VA: " + running.topRef().getAddress()/pageSize 
+                        + "; VA: " + running.topRef().getAddress()
+                        + "; Page: " + running.topRef().getAddress()/pageSize
                         + "; Offset: " + running.topRef().getAddress()%pageSize
                         + "; ");
                 System.out.println();
