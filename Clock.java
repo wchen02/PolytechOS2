@@ -46,13 +46,19 @@ public class Clock {
         while (processList.size() > 0) {
             int VA, PA, frameNumber, pageNumber, offset;
             boolean nextProcess = false;
-
+            int infinity = 0;
             while (!checkIfReady(processList.get(0))) {
                 /* set top process to the next process and
                 push the top to the end of the queue */
                 Process top = processList.get(0);
                 processList.remove(0); // Take O(N)
                 processList.add(top);
+                ++infinity;
+                if(infinity >= processList.size()){
+                    Process tmp = processList.get(0);
+                    tmp.pcb.decPenaltyTime();
+                    processList.set(0, tmp);
+                }
             } // if there's penalty on all processes this will generate an infinite loop
 
             running = processList.get(0); // this has to change ! update Note to self
