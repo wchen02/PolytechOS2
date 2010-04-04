@@ -44,6 +44,7 @@ public class Clock {
 
         while (processList.size() > 0) {
             int VA, PA, frameNumber, pageNumber, offset;
+            boolean nextProcess = false;
 
             while (!checkIfReady(processList.get(0))) {
                 /* set top process to the next process and
@@ -93,7 +94,6 @@ public class Clock {
                         running.setPenaltyTime(missPenalty);
                         bitmap[freePageIndex] = true; // now its occupy, not free
                         System.out.print("Free; ");
-
                     } else {
                         boolean isDirty = false;
                         // this means loop around finding unref'ed. pages.
@@ -113,16 +113,19 @@ public class Clock {
                             System.out.print("Dirty; ");
                         }
                     }
-
+                    nextProcess = true;
+                    pageTable.setPageAtIndex(pageNumber, tmpPage);
                 }
                 frameNumber = pageTable.getPageAtIndex(pageNumber).getFrameNumber();
                 PA = frameNumber * pageSize + offset;
-                System.out.print("Frame: " + frameNumber
-                        + "; PA: " + PA);
+                System.out.print("Frame: " + frameNumber + "; PA: " + PA);
 
                 System.out.println();
                 running.popRef();// we no longer need this.
                 memoryCycle++;
+                if (nextProcess) {
+                    break;
+                }
             }
             if (running.topRef() == null) {
                 continue;
