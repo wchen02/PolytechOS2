@@ -1,0 +1,153 @@
+References file: references.txt
+Page size: 1024
+VA size: 16
+PA size: 13
+Miss penalty: 1
+Dirty page penalty: 1
+Quantum: 4
+Reevaluate: true
+Debug: true
+Frame Count: 8
+
+Running Clock
+========
+Running 3141
+Clock:  Free frames: 0 1 2 3 4 5 6 7
+R/W: R; VA: 17; Page: 0; Offset: 17; Free; Frame: 0 PA: 17
+Process: 3141 waiting: 1
+Running 1414
+Clock: 0        Free frames: 1 2 3 4 5 6 7
+R/W: R; VA: 17; Page: 0; Offset: 17; Free; Frame: 1 PA: 1041
+Process: 1414 waiting: 1
+Running 2718
+Clock: 0 1      Free frames: 2 3 4 5 6 7
+R/W: R; VA: 17; Page: 0; Offset: 17; Free; Frame: 2 PA: 2065
+Process: 2718 waiting: 1
+Running 3141
+Clock: 0 1 2    Free frames: 3 4 5 6 7
+R/W: R; VA: 17; Page: 0; Offset: 17; Hit; Frame: 0 PA: 17
+Clock: 0 1 2    Free frames: 3 4 5 6 7
+R/W: R; VA: 1024; Page: 1; Offset: 0; Free; Frame: 3 PA: 3072
+Process: 3141 waiting: 1
+Running 1414
+Clock: 0 1 2 3  Free frames: 4 5 6 7
+R/W: R; VA: 17; Page: 0; Offset: 17; Hit; Frame: 1 PA: 1041
+Clock: 0 1 2 3  Free frames: 4 5 6 7
+R/W: W; VA: 1024; Page: 1; Offset: 0; Free; Frame: 4 PA: 4096
+Process: 1414 waiting: 1
+Running 2718
+Clock: 0 1 2 3 4        Free frames: 5 6 7
+R/W: R; VA: 17; Page: 0; Offset: 17; Hit; Frame: 2 PA: 2065
+Clock: 0 1 2 3 4        Free frames: 5 6 7
+R/W: R; VA: 1024; Page: 1; Offset: 0; Free; Frame: 5 PA: 5120
+Process: 2718 waiting: 1
+Running 3141
+Clock: 0 1 2 3 4 5      Free frames: 6 7
+R/W: R; VA: 1024; Page: 1; Offset: 0; Hit; Frame: 3 PA: 3072
+Clock: 0 1 2 3 4 5      Free frames: 6 7
+R/W: R; VA: 2050; Page: 2; Offset: 2; Free; Frame: 6 PA: 6146
+Process: 3141 waiting: 1
+Running 1414
+Clock: 0 1 2 3 4 5 6    Free frames: 7
+R/W: W; VA: 1024; Page: 1; Offset: 0; Hit; Frame: 4 PA: 4096
+Clock: 0 1 2 3 4 5 6    Free frames: 7
+R/W: W; VA: 2050; Page: 2; Offset: 2; Free; Frame: 7 PA: 7170
+Process: 1414 waiting: 1
+Running 2718
+Clock: 0 1 2 3 4 5 6 7  Free frames:
+R/W: R; VA: 1024; Page: 1; Offset: 0; Hit; Frame: 5 PA: 5120
+Clock: 0 1 2 3 4 5 6 7  Free frames:
+R/W: R; VA: 2050; Page: 2; Offset: 2; Clean; Frame: 0 PA: 2
+Process: 2718 waiting: 1
+Running 3141
+Clock: 0 *1 2 3 4 5 6 7         Free frames:
+R/W: R; VA: 2050; Page: 2; Offset: 2; Hit; Frame: 6 PA: 6146
+Clock: 0 *1 2 3 4 5 6 7         Free frames:
+R/W: W; VA: 1050; Page: 1; Offset: 26; Hit; Frame: 3 PA: 3098
+Clock: 0 *1 2 3 4 5 6 7         Free frames:
+R/W: R; VA: 4000; Page: 3; Offset: 928; Clean; Frame: 1 PA: 1952
+Process: 3141 waiting: 1
+Running 1414
+Clock: 0 1 *2 3 4 5 6 7         Free frames:
+R/W: W; VA: 2050; Page: 2; Offset: 2; Hit; Frame: 7 PA: 7170
+Clock: 0 1 *2 3 4 5 6 7         Free frames:
+R/W: R; VA: 1050; Page: 1; Offset: 26; Hit; Frame: 4 PA: 4122
+Clock: 0 1 *2 3 4 5 6 7         Free frames:
+R/W: W; VA: 4000; Page: 3; Offset: 928; Clean; Frame: 2 PA: 2976
+Process: 1414 waiting: 1
+Running 2718
+Clock: 0 1 2 *3 4 5 6 7         Free frames:
+R/W: R; VA: 2050; Page: 2; Offset: 2; Hit; Frame: 0 PA: 2
+Clock: 0 1 2 *3 4 5 6 7         Free frames:
+R/W: R; VA: 1050; Page: 1; Offset: 26; Hit; Frame: 5 PA: 5146
+Clock: 0 1 2 *3 4 5 6 7         Free frames:
+R/W: R; VA: 4000; Page: 3; Offset: 928; Dirty; Frame: 3 PA: 4000
+Process: 2718 waiting: 2
+Running 3141
+Clock: 0 1 2 3 *4 5 6 7         Free frames:
+R/W: R; VA: 4000; Page: 3; Offset: 928; Hit; Frame: 1 PA: 1952
+Clock: 0 1 2 3 *4 5 6 7         Free frames:
+R/W: W; VA: 5000; Page: 4; Offset: 904; Dirty; Frame: 4 PA: 5000
+Process: 3141 waiting: 2
+Running 1414
+Clock: 0 1 2 3 4 *5 6 7         Free frames:
+R/W: W; VA: 4000; Page: 3; Offset: 928; Hit; Frame: 2 PA: 2976
+Clock: 0 1 2 3 4 *5 6 7         Free frames:
+R/W: R; VA: 5000; Page: 4; Offset: 904; Clean; Frame: 5 PA: 6024
+Process: 1414 waiting: 1
+Running 2718
+Clock: 0 1 2 3 4 5 *6 7         Free frames:
+R/W: R; VA: 4000; Page: 3; Offset: 928; Hit; Frame: 3 PA: 4000
+Clock: 0 1 2 3 4 5 *6 7         Free frames:
+R/W: R; VA: 5000; Page: 4; Offset: 904; Clean; Frame: 6 PA: 7048
+Process: 2718 waiting: 1
+Running 3141
+Clock: 0 1 2 3 4 5 6 *7         Free frames:
+R/W: W; VA: 5000; Page: 4; Offset: 904; Hit; Frame: 4 PA: 5000
+Clock: 0 1 2 3 4 5 6 *7         Free frames:
+R/W: R; VA: 100; Page: 0; Offset: 100; Dirty; Frame: 7 PA: 7268
+Process: 3141 waiting: 2
+Running 1414
+Clock: *0 1 2 3 4 5 6 7         Free frames:
+R/W: R; VA: 5000; Page: 4; Offset: 904; Hit; Frame: 5 PA: 6024
+Clock: *0 1 2 3 4 5 6 7         Free frames:
+R/W: W; VA: 100; Page: 0; Offset: 100; Clean; Frame: 0 PA: 100
+Process: 1414 waiting: 1
+Running 2718
+Clock: 0 *1 2 3 4 5 6 7         Free frames:
+R/W: R; VA: 5000; Page: 4; Offset: 904; Hit; Frame: 6 PA: 7048
+Clock: 0 *1 2 3 4 5 6 7         Free frames:
+R/W: R; VA: 100; Page: 0; Offset: 100; Clean; Frame: 1 PA: 1124
+Process: 2718 waiting: 1
+Running 3141
+Clock: 0 1 *2 3 4 5 6 7         Free frames:
+R/W: R; VA: 100; Page: 0; Offset: 100; Hit; Frame: 7 PA: 7268
+Clock: 0 1 *2 3 4 5 6 7         Free frames:
+R/W: W; VA: 6000; Page: 5; Offset: 880; Dirty; Frame: 2 PA: 2928
+Process: 3141 waiting: 2
+Running 1414
+Clock: 0 1 2 *3 4 5 6 7         Free frames:
+R/W: W; VA: 100; Page: 0; Offset: 100; Hit; Frame: 0 PA: 100
+Clock: 0 1 2 *3 4 5 6 7         Free frames:
+R/W: R; VA: 6000; Page: 5; Offset: 880; Clean; Frame: 3 PA: 3952
+Process: 1414 waiting: 1
+Running 2718
+Clock: 0 1 2 3 *4 5 6 7         Free frames:
+R/W: R; VA: 100; Page: 0; Offset: 100; Hit; Frame: 1 PA: 1124
+Clock: 0 1 2 3 *4 5 6 7         Free frames:
+R/W: R; VA: 6000; Page: 5; Offset: 880; Dirty; Frame: 4 PA: 4976
+Process: 2718 waiting: 2
+Running 3141
+Clock: 0 1 2 3 4 *5 6 7         Free frames:
+R/W: W; VA: 6000; Page: 5; Offset: 880; Hit; Frame: 2 PA: 2928
+3141 done. Freeing frames: 7 2
+Running 1414
+Clock: 0 1 2 3 4 *5 6 7         Free frames: 2 7
+R/W: R; VA: 6000; Page: 5; Offset: 880; Hit; Frame: 3 PA: 3952
+1414 done. Freeing frames: 0 5 3
+Running 2718
+Clock: 0 1 2 3 4 *5 6 7         Free frames: 0 2 3 5 7
+R/W: R; VA: 6000; Page: 5; Offset: 880; Hit; Frame: 4 PA: 4976
+2718 done. Freeing frames: 1 6 4
+
+Press any key to continue . . .
