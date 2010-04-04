@@ -50,12 +50,14 @@ public class Process {
             penaltyTime = 0; // don't allow it to be negative, it doesn't make sense
         }
     }
- public void setPenaltyTime(int set) {
+
+    public void setPenaltyTime(int set) {
         penaltyTime = set;
         if (penaltyTime < 0) {
             penaltyTime = 0; // don't allow it to be negative, it doesn't make sense
         }
     }
+
     public Reference getReference(int index) {
         return refs.get(index);
     }

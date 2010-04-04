@@ -87,7 +87,9 @@ public class Clock {
                     if (freePageIndex >= 0) {
                         clockStruct.add(tmpPage);
                         running.setPenaltyTime(missPenalty);
+                        bitmap[freePageIndex] = true; // now its occupy, not free
                         System.out.print("Free; ");
+
                     } else {
                         boolean isDirty = false;
                         // this means loop around finding unref'ed. pages.
@@ -109,15 +111,15 @@ public class Clock {
                     }
 
                 }
-                System.out.print("Frame: " + pageTable.getPageAtIndex(running.topRef().getAddress()/pageSize).getFrameNumber()
-                        + "; PA: " );
+                System.out.print("Frame: " + pageTable.getPageAtIndex(running.topRef().getAddress() / pageSize).getFrameNumber() + "; PA: ");
 
                 System.out.println();
                 running.popRef();// we no longer need this.
                 memoryCycle++;
             }
-            if (running.topRef() == null)
+            if (running.topRef() == null) {
                 continue;
+            }
             // move to the back of the queue
             processList.add(running);
         }
@@ -170,7 +172,7 @@ public class Clock {
                     while (scan.hasNextLine()) {
                         String line = scan.nextLine();
                         if (line.isEmpty()) {
-                            break; 
+                            break;
                         }
                         if (DEBUG_OUT) {
                             System.out.println("\nline: " + line +

@@ -9,11 +9,11 @@ public class Reference {
         readOrWrite = rw;
     }
 
-    public boolean getReadOrWrite(){
+    public boolean getReadOrWrite() {
         return readOrWrite;
     }
 
-    public int getAddress(){
+    public int getAddress() {
         return address;
     }
 }

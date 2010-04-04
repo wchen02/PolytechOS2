@@ -3,10 +3,11 @@ import java.util.ArrayList;
 
 public class PageTable {
 
-    public PageTable(int size){
+    public PageTable(int size) {
         pageTable = new ArrayList<Page>(9);
-        for(int i = 0; i <= 10; ++i)
-        pageTable.add(new Page(i));
+        for (int i = 0; i <= 10; ++i) {
+            pageTable.add(new Page(i));
+        }
     }
 
     public void addPage(Page page) {
@@ -31,7 +32,6 @@ public class PageTable {
     public void setPageAtIndex(int index, Page page) {
         pageTable.set(index, page);
     }
-    
     private final ArrayList<Page> pageTable;
 
     public class Page {
@@ -43,11 +43,10 @@ public class PageTable {
         public int getFrameNumber() {
             return frameNumber;
         }
-
         private int frameNumber;
 
         /* Writing a getter and a setter for each variable doesn't make any sense */
-        public boolean valid = true,
+        public boolean valid = false,
                 referenced = false,
                 dirty = false;
     }
