@@ -4,5 +4,5 @@ dirtyPagePenalty=0
 pageSize=1024
 VAbits=16
 PAbits=13
-frameCount=5
+frameCount=8
 debug=true

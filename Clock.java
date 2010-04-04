@@ -43,6 +43,8 @@ public class Clock {
         System.out.println("References file: " + referenceFile + "\nPage size: " + pageSize + "\nVA size: " + vaBits + "\nPA size: " + paBits + "\nMiss penalty: " + missPenalty + "\nDirty page penalty: " + dirtyPagePenalty + "\nDebug: " + DEBUG + "\nFrame Count: " + frameCount + "\n" + "\nRunning Clock\n========");
 
         while (processList.size() > 0) {
+            int VA, PA, frameNumber, pageNumber, offset;
+
             while (!checkIfReady(processList.get(0))) {
                 /* set top process to the next process and
                 push the top to the end of the queue */
@@ -67,8 +69,10 @@ public class Clock {
                     }
                     System.out.println();
                 }
-
-                System.out.print("R/W: " + ((running.topRef().getReadOrWrite()) ? "R" : "W") + "; VA: " + running.topRef().getAddress() + "; Page: " + running.topRef().getAddress() / pageSize + "; Offset: " + running.topRef().getAddress() % pageSize + "; ");
+                VA = running.topRef().getAddress();
+                pageNumber = running.topRef().getAddress() / pageSize;
+                offset = running.topRef().getAddress() % pageSize;
+                System.out.print("R/W: " + ((running.topRef().getReadOrWrite()) ? "R" : "W") + "; VA: " + VA + "; Page: " + pageNumber + "; Offset: " + offset + "; ");
 
                 if (checkRefIfValid(running.topRef())) {
                     int tmpBurst = running.getBurst();
@@ -111,7 +115,10 @@ public class Clock {
                     }
 
                 }
-                System.out.print("Frame: " + pageTable.getPageAtIndex(running.topRef().getAddress() / pageSize).getFrameNumber() + "; PA: ");
+                frameNumber = pageTable.getPageAtIndex(pageNumber).getFrameNumber();
+                PA = frameNumber * pageSize + offset;
+                System.out.print("Frame: " + frameNumber
+                        + "; PA: " + PA);
 
                 System.out.println();
                 running.popRef();// we no longer need this.
