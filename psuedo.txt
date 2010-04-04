@@ -1,0 +1,100 @@
+Some formulas for calculating the following:
+VA = reference address
+Page number = VA/page size
+Offset = VA mod page size
+Frame number = lowest free frame or the hit frame number
+PA = Frame number * page size + Offset
+waiting = the penalty, the time require for the page to be loaded
+
+function run
+	while got process to run
+		while checkIfReady( topProcess )
+			yes:
+				running <- the top process
+				remove the top process from the queue
+			no:
+				push the top to the end of the queue
+		
+		set fresh burst to the running process
+		
+		** This is a non-preemptive algorithm, therefore once a process starts its burst it will be allowed to complete it, unless it generates a page fault. **
+		/* The burst and the ref should be in one while loop? */
+		
+		while running->burst til it ends
+			decrement penalty among all processes
+			if checkRefIfValid (VA):
+				yes: // hit
+					set ref bit on
+					if write set dirty bit on
+					if there are references left
+						run again
+					else 
+						break out of the loop
+				no: // miss
+					pagefault:
+						set miss penalty to the running process
+						clock alg. replace page by the algorithm; clock(running)
+						break out of the loop
+					*reevaluate
+				pop the reference
+			end if
+		end while
+
+		if there are references left for the running process
+			push the process to the end of the queue
+		else
+			free up the frames used by the page table and the clockstuct of the running process
+			skip it ( don't push it to the queue )
+
+end function
+
+
+function checkRefIfValid(VA)
+	page number [index of pagetable] <- first 10 bit of VA
+	return running process->pageTable[page number].valid bit
+	/* return the valid bit of the entry at page number of the running process's pageTable */
+end function
+
+
+function checkIfReady( process )
+	check to see if process is ready to be ran:
+			check these:
+				A process will not be ready to run again, after a page fault, for an amount of time equal to the sum of the missPenalty and the dirtyPagePenalty.
+				or it is waiting for a page to be loaded
+end function
+
+
+function clock(Process process)
+	// Free frame
+	for bitmap from 0 to framecount
+		if there exist free pages, use that frame number
+			add that frame number to the running process's page table at entry page number with valid bit on
+			return
+		end if
+	end for
+	
+	for clockstuct from 0 to framecount
+		if checkRefBit:
+			yes: // means it was referenced
+				set ref bit at hand pointer to off
+				advance hand pointer; continue
+			no: 
+				replace the page at hand pointer:
+				if dirty bit is on
+					add dirty penalties to curent running process
+					// Dirty
+				else 
+					// Clean
+		end if
+	end for
+	
+	// the hand pointer has move one full cycle, replace the first page
+	replace the first page of clockstruct:
+		if dirty bit is on
+			add dirty penalties to curent running process
+			// Dirty
+		else 
+			// Clean
+end function
+
+
