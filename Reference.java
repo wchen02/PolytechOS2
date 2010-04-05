@@ -1,6 +1,3 @@
-package hw02;
-
-
 public class Reference {
 
     private int address;

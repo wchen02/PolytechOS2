@@ -1,7 +1,3 @@
-package hw02;
-
-
-
 public class Process {
   public PageTable pt;          // future improvement, use actual encapsulation !
   public ProcessControlBlock pcb;

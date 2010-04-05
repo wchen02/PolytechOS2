@@ -1,6 +1,3 @@
-package hw02;
-
-
 import java.util.ArrayList;
 
 public class PageTable {

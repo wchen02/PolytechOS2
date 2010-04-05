@@ -17,9 +17,6 @@ function run
 		
 		set fresh burst to the running process
 		
-		** This is a non-preemptive algorithm, therefore once a process starts its burst it will be allowed to complete it, unless it generates a page fault. **
-		/* The burst and the ref should be in one while loop? */
-		
 		while running->burst til it ends
 			decrement penalty among all processes
 			if checkRefIfValid (VA):
