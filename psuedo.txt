@@ -27,13 +27,14 @@ function run
 						run again
 					else 
 						break out of the loop
+					end if
+					pop the reference
 				no: // miss
 					pagefault:
 						set miss penalty to the running process
 						clock alg. replace page by the algorithm; clock(running)
 						break out of the loop
 					*reevaluate
-				pop the reference
 			end if
 		end while
 
