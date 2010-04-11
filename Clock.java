@@ -107,6 +107,7 @@ public class Clock {
                         }else
                             System.out.println("error occured, the page of running.topRef does not match anything in the clockStruct, run() method clock check!");
                     } else {
+                        running.pcb.setPenaltyTime(missPenalty);
                         clockAlg(running);
                         // re-evaluate
                         if(!reevaluate){
@@ -118,18 +119,19 @@ public class Clock {
                     frameNumber = running.pt.getPageAtIndex(pageNumber).getFrameNumber();
                     PA = frameNumber * pageSize + offset;
                     System.out.print("Frame: " + frameNumber + "; PA: " + PA);
-
+                    if(PA == 5000)
+                        System.out.print("X");
                     System.out.println();
                     memoryCycle++;
 
                     if(running.pcb.getPenaltyTime() > 0) {
                         System.out.println("Process: " + running.pcb.getPid() + " waiting: " + running.pcb.getPenaltyTime());
                     }
-                    for(Process process : processList){
-                        if(process.pcb.getPenaltyTime() > 0){
-                            System.out.println("Process: " + process.pcb.getPid()
-                                    + "waiting: " + process.pcb.getPenaltyTime());
-                        }
+                }
+                for(Process process : processList){
+                    if(process.pcb.getPenaltyTime() > 0){
+                        System.out.println("Process: " + process.pcb.getPid()
+                                + " waiting: " + process.pcb.getPenaltyTime());
                     }
                 }
                 if (nextProcess) {
@@ -189,7 +191,7 @@ public class Clock {
 
             for (int i = 0; i < numOfProcesses; ++i) {
                 if (scan.hasNextLine()) {
-                    int tmpPid, tmpBurst, tmpNumOfRefs;
+                    int tmpPid, tmpNumOfRefs;
                     tmpPid = scan.nextInt(); // pid
                     //tmpBurst = scan.nextInt(); // burst
                     tmpNumOfRefs = scan.nextInt();  // number of references
@@ -307,7 +309,7 @@ public class Clock {
                 newFrame.referenced = true;
                 bitmap[i] = true; // it is now occupy
                 process.pt.setPageAtIndex(pageNumber, newFrame);
-                process.pcb.setPenaltyTime(missPenalty);
+
                 if(clockStruct.size() > 0){
                     clockStruct.add(clockPointer, newFrame); // adds to the before the clockptr
                     clockPointer = (clockPointer + 1)%bitmap.length;
@@ -319,39 +321,39 @@ public class Clock {
         }
 
         for (int i = 0; i < clockStruct.size(); ++i) {
-            if (clockStruct.get(0).referenced) { // means the page was referenced
+            if (clockStruct.get(clockPointer).referenced) { // means the page was referenced
                 // clear ref bit and advance
-                Page refPage = clockStruct.get(i);
-                refPage.referenced = false;
-                process.pt.setPageAtIndex(pageNumber, refPage);
-                clockStruct.set(i, refPage);
+                clockStruct.get(clockPointer).referenced = false;
                 // advances the clockPtr
                 clockPointer = (clockPointer + 1)%bitmap.length;
             } else {
                 // replace with the page at index: page number of page table
-
-                clockStruct.set(i, process.pt.getPageAtIndex(pageNumber));
-
-                if (clockStruct.get(i).dirty) { // Dirty
+                clockStruct.get(clockPointer).referenced = true;
+                if (clockStruct.get(clockPointer).dirty) { // Dirty
                     process.pcb.setPenaltyTime(dirtyPagePenalty +
                             process.pcb.getPenaltyTime());
                     System.out.print("Dirty; ");
                 } else {
                     System.out.print("Clean; ");
                 }
+                process.pt.setPageAtIndex(pageNumber, clockStruct.get(clockPointer));
+                clockPointer = (clockPointer + 1)%bitmap.length;
                 return;
             }
         }
 
         // the hand pointer has move one full cycle, replace the first page
-        clockStruct.set(0, process.pt.getPageAtIndex(pageNumber));
+//        clockStruct.set(clockPointer, process.pt.getPageAtIndex(pageNumber));
+        clockStruct.get(clockPointer).referenced = true;
 
-        if (clockStruct.get(0).dirty) { // Dirty
+        if (clockStruct.get(clockPointer).dirty) { // Dirty
             process.pcb.setPenaltyTime(dirtyPagePenalty +
                     process.pcb.getPenaltyTime());
             System.out.print("Dirty; ");
         } else {
             System.out.print("Clean; ");
         }
+        process.pt.setPageAtIndex(pageNumber, clockStruct.get(clockPointer));
+        clockPointer = (clockPointer + 1)%bitmap.length;
     }
 }
