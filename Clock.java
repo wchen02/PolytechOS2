@@ -109,6 +109,9 @@ public class Clock {
                     } else {
                         clockAlg(running);
                         // re-evaluate
+                        if(!reevaluate){
+                            running.pcb.popRef();
+                        }
                         nextProcess = true;
                     }
 
@@ -188,11 +191,11 @@ public class Clock {
                 if (scan.hasNextLine()) {
                     int tmpPid, tmpBurst, tmpNumOfRefs;
                     tmpPid = scan.nextInt(); // pid
-                    tmpBurst = scan.nextInt(); // burst
+                    //tmpBurst = scan.nextInt(); // burst
                     tmpNumOfRefs = scan.nextInt();  // number of references
                     if (DEBUG_OUT) {
                         System.out.println("\npid: " + tmpPid +
-                                "\nburst: " + tmpBurst +
+//                                "\nburst: " + tmpBurst +
                                 "\nnum of refs: " + tmpNumOfRefs);
                     }
                     scan.nextLine(); // gobble up the rest of the line
@@ -214,7 +217,7 @@ public class Clock {
                                 );
                         refs.add(reference);
                     }
-                    processList.add(new Process(new PageTable(bitmap.length), new ProcessControlBlock(tmpPid, tmpBurst, tmpNumOfRefs, refs)));
+                    processList.add(new Process(new PageTable(bitmap.length), new ProcessControlBlock(tmpPid, quantum, tmpNumOfRefs, refs)));
                 }
             }
         } catch (java.io.FileNotFoundException e) {
