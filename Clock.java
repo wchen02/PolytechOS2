@@ -1,14 +1,13 @@
 
 import java.util.*;
 import java.util.ArrayList;
-
 import java.io.*;
 
 public class Clock {
 
-    private static boolean DEBUG = true; // for sterling algor.
-    private boolean DEBUG_OUT = false,
-            reevaluate = true;    // for internal use, comment to false
+    private static boolean DEBUG = false; // for sterling algorithm
+    private boolean DEBUG_OUT = false,// for internal use
+            reevaluate = true;
     private int missPenalty = 0, quantum = 0,
             dirtyPagePenalty = 0, pageSize = 0,
             vaBits = 0, paBits = 0, frameCount = 0,
@@ -26,7 +25,9 @@ public class Clock {
 
     public Clock() {
         readSettings("MemoryManagement.txt");
-        frameCount = (int)Math.pow(2, paBits - Math.log10(pageSize)/Math.log10(2));
+        // frameCount = 2^(paBits - pagesize bit)
+        frameCount = (int) Math.pow(2,
+                paBits - Math.log10(pageSize) / Math.log10(2)); // change of log base
         bitmap = new boolean[frameCount];
         clockStruct = new ArrayList<Page>(frameCount);
         for (int i = 0; i < bitmap.length; ++i) {
@@ -36,10 +37,19 @@ public class Clock {
     }
 
     public void run() {
-        System.err.println();
+        System.out.println();
         int memoryCycle = 1;
 
-        System.out.println("References file: " + referenceFile + "\nPage size: " + pageSize + "\nVA size: " + vaBits + "\nPA size: " + paBits + "\nMiss penalty: " + missPenalty + "\nDirty page penalty: " + dirtyPagePenalty + "\nDebug: " + DEBUG + "\nFrame Count: " + frameCount + "\n" + "\nRunning Clock\n========");
+        System.out.println("References file: " + referenceFile
+                + "\nPage size: " + pageSize
+                + "\nVA size: " + vaBits
+                + "\nPA size: " + paBits
+                + "\nMiss penalty: " + missPenalty
+                + "\nDirty page penalty: " + dirtyPagePenalty
+                + "\nQuantum: " + quantum
+                + "\nDebug: " + DEBUG
+                + "\nFrame Count: "
+                + frameCount + "\n" + "\nRunning Clock\n========");
 
         while (processList.size() > 0) {
             int VA, PA, frameNumber, pageNumber, offset;
@@ -53,17 +63,14 @@ public class Clock {
                 processList.add(top);
                 ++infinity;
                 if (infinity >= processList.size()) {
-                    Process tmp = processList.get(0);
-                    tmp.pcb.decPenaltyTime();
-                    processList.set(0, tmp);
+                    top.pcb.decPenaltyTime();
                 }
             } // if there's penalty on all processes this will generate an infinite loop
 
-            running = processList.get(0); // this has to change ! update Note to self
-            processList.remove(0); // Take O(N)
+            running = processList.get(0);
+            processList.remove(0); 
 
             System.out.println("Running " + running.pcb.getPid());
-            //if (checkRefIfValid(running.pcb.topRef())) {//**************************************************************************
             int tmpBurst = running.pcb.getBurst();
 
             while (tmpBurst > 0) {
@@ -73,7 +80,9 @@ public class Clock {
                     if (DEBUG) {
                         System.out.print("Clock: ");
                         for (int i = 0; i < clockStruct.size(); ++i) {
-                            System.out.print(( (clockPointer == i) ? "*" : "" ) + clockStruct.get(i).getFrameNumber() + ((clockStruct.get(i).referenced) ? "R" : "") + " ");
+                            System.out.print(((clockPointer == i) ? "*" : "")
+                                    + clockStruct.get(i).getFrameNumber()
+                                    + ((clockStruct.get(i).referenced) ? "R" : "") + " ");
                         }
                         System.out.print("Free frames: ");
                         for (int i = 0; i < bitmap.length; ++i) {
@@ -85,12 +94,15 @@ public class Clock {
                     VA = running.pcb.topRef().getAddress();
                     pageNumber = running.pcb.topRef().getAddress() / pageSize;
                     offset = running.pcb.topRef().getAddress() % pageSize;
-                    System.out.print("R/W: " + ((running.pcb.topRef().getReadOrWrite()) ? "R" : "W") + "; VA: " + VA + "; Page: " + pageNumber + "; Offset: " + offset + "; ");
+                    System.out.print("R/W: " + ((running.pcb.topRef().getReadOrWrite()) ? "R" : "W")
+                            + "; VA: " + VA
+                            + "; Page: " + pageNumber 
+                            + "; Offset: " + offset + "; ");
 
-                    if (checkRefIfValid(/*checks if Virtual Addres map is valid*/running/*.pcb.topRef()*/)) {
+                    if (checkRefIfValid(running)) {
                         System.out.print("Hit; ");
                         // set referenced bit on
-                        setBit(running, "referenced", true);
+                        running.pt.getPageAtIndex(pageNumber).referenced = true;
                         int indexOfPage = clockStruct.indexOf(running.pt.getPageAtIndex(pageNumber));
                         Page clocktmpPage = null;
                         if (indexOfPage >= 0) {
@@ -101,16 +113,17 @@ public class Clock {
                             //read = true; --> meaning the reference was to read
                             if (!runningtmpRef.getReadOrWrite()) {
                                 clocktmpPage.dirty = true;
-                                setBit(running, "dirty", true);
+                                running.pt.getPageAtIndex(pageNumber).dirty = true;
                             }
                             running.pcb.popRef();
-                        }else
+                        } else {
                             System.out.println("error occured, the page of running.topRef does not match anything in the clockStruct, run() method clock check!");
+                        }
                     } else {
                         running.pcb.setPenaltyTime(missPenalty);
                         clockAlg(running);
                         // re-evaluate
-                        if(!reevaluate){
+                        if (!reevaluate) {
                             running.pcb.popRef();
                         }
                         nextProcess = true;
@@ -119,19 +132,19 @@ public class Clock {
                     frameNumber = running.pt.getPageAtIndex(pageNumber).getFrameNumber();
                     PA = frameNumber * pageSize + offset;
                     System.out.print("Frame: " + frameNumber + "; PA: " + PA);
-                    if(PA == 5000)
-                        System.out.print("X");
                     System.out.println();
                     memoryCycle++;
 
-                    if(running.pcb.getPenaltyTime() > 0) {
-                        System.out.println("Process: " + running.pcb.getPid() + " waiting: " + running.pcb.getPenaltyTime());
+                    if (DEBUG && running.pcb.getPenaltyTime() > 0) {
+                        System.out.println("Process: " + running.pcb.getPid()
+                                + " waiting: " + running.pcb.getPenaltyTime());
                     }
                 }
-                for(Process process : processList){
-                    if(process.pcb.getPenaltyTime() > 0){
-                        System.out.println("Process: " + process.pcb.getPid()
-                                + " waiting: " + process.pcb.getPenaltyTime());
+                if(DEBUG){
+                    for (Process process : processList) {
+                        if (process.pcb.getPenaltyTime() > 0) {
+                            System.out.println("Process: " + process.pcb.getPid() + " waiting: " + process.pcb.getPenaltyTime());
+                        }
                     }
                 }
                 if (nextProcess) {
@@ -146,19 +159,6 @@ public class Clock {
         }
     }
 
-    private void setBit(Process running, String type, boolean bool) {
-        int VA = running.pcb.topRef().getAddress();
-        int index = VA / pageSize;
-        if (type.equals("valid")) {
-            running.pt.getPageAtIndex(index).valid = bool;
-        } else if (type.equals("referenced")) {
-            running.pt.getPageAtIndex(index).referenced = bool;
-        } else if (type.equals("dirty")) {
-            running.pt.getPageAtIndex(index).dirty = bool;
-        }
-
-    }
-
     private void decPenaltyForAll() {
         for (int i = 0; i < processList.size(); ++i) {
             Process tmp = processList.get(i);
@@ -169,17 +169,6 @@ public class Clock {
     }
 
     private void readReference(String filename) {
-        /*
-         *# of processes
-         * process list
-         * pid
-         * burst, Defined as the number of memory references
-        between I/O requests.
-         * # of references for the process
-        list of references for the process.
-        Each reference indicates whether it was a
-        read or a write
-         */
         try {
             Scanner scan = new Scanner(new File(filename));
 
@@ -189,6 +178,9 @@ public class Clock {
                 System.out.println("Error: Nothing to read. Reference File.\n");
             }
 
+            if (DEBUG_OUT) {
+                System.out.print("\nin readReference()");
+            }
             for (int i = 0; i < numOfProcesses; ++i) {
                 if (scan.hasNextLine()) {
                     int tmpPid, tmpNumOfRefs;
@@ -196,9 +188,8 @@ public class Clock {
                     //tmpBurst = scan.nextInt(); // burst
                     tmpNumOfRefs = scan.nextInt();  // number of references
                     if (DEBUG_OUT) {
-                        System.out.println("\npid: " + tmpPid +
-//                                "\nburst: " + tmpBurst +
-                                "\nnum of refs: " + tmpNumOfRefs);
+                        System.out.println("\n\tpid: " + tmpPid
+                                + " ref#: " + tmpNumOfRefs);
                     }
                     scan.nextLine(); // gobble up the rest of the line
 
@@ -208,18 +199,19 @@ public class Clock {
                         if (line.isEmpty()) {
                             break;
                         }
-                        if (DEBUG_OUT) {
-                            System.out.println("\nline: " + line +
-                                    "\nsizeOfLine: " + line.length()); // output for debug
 
-                        }
                         Scanner scanLine = new Scanner(line);
                         Reference reference = new Reference(scanLine.nextInt(), // address
                                 (scanLine.hasNext("R")) // read or write
                                 );
+                        if (DEBUG_OUT) {
+                            System.out.println("\tVA: " + reference.getAddress()
+                                    + " R/W: " + ((reference.getReadOrWrite()) ? "R" : "W"));
+                        }
                         refs.add(reference);
                     }
-                    processList.add(new Process(new PageTable(bitmap.length), new ProcessControlBlock(tmpPid, quantum, tmpNumOfRefs, refs)));
+                    processList.add(new Process(new PageTable(bitmap.length),
+                            new ProcessControlBlock(tmpPid, quantum, tmpNumOfRefs, refs)));
                 }
             }
         } catch (java.io.FileNotFoundException e) {
@@ -228,37 +220,34 @@ public class Clock {
         }
     }
 
+    /* reads the setting file */
     private void readSettings(String filename) {
-        /*
-        referenceFile=references.txt
-        quantum=4
-        missPenalty=1
-        dirtyPagePenalty=1
-        pageSize=1024
-        VAbits=16
-        PAbits=13
-        debug=true
-        reevaluate=true
-         */
         try {
             Scanner scan = new Scanner(new File(filename));
             String line, value, arg;
+            if (DEBUG_OUT) {
+                System.out.println("in readSetting()");
+            }
             while (scan.hasNextLine()) {
                 line = scan.nextLine();
+                // find the equal sign and 
+                // left of the sign is the argument
+                // right of the sign is the value
                 int indexEquals = line.indexOf("=");
                 arg = line.substring(0, indexEquals);
                 value = line.substring(indexEquals + 1);
                 if (DEBUG_OUT) {
-                    System.out.println("in readSetting()\nargnument: " + arg + "\nvalue: " + value);
+                    System.out.println("\t" + arg + " = " + value);
                 }
                 setValue(arg, value);
             }
         } catch (java.io.FileNotFoundException e) {
-            System.out.println("Exception in readSetting(), in clock class ");
+            System.out.println("Exception in readSetting()");
             e.printStackTrace();
         }
     }
 
+    /* set value to specific arguments */
     private void setValue(String arg, String value) {
         if (arg.toLowerCase().equals("misspenalty")) {
             missPenalty = Integer.valueOf(value);
@@ -276,13 +265,15 @@ public class Clock {
             paBits = Integer.valueOf(value);
         } else if (arg.toLowerCase().equals("quantum")) {
             quantum = Integer.valueOf(value);
-        }else if (arg.toLowerCase().equals("reevaluate")) {
+        } else if (arg.toLowerCase().equals("reevaluate")) {
             reevaluate = Boolean.valueOf(value);
-        }else {
-            System.out.println("Error: Argument not found! \nArgument:" + arg + "\nValue: " + value);
+        } else {
+            System.out.println("Error: Argument not found! "
+                    + "\nArgument:" + arg
+                    + "\nValue: " + value);
         }
     }
-	
+
     public boolean checkIfReady(Process process) { // true if no penalty
         return (process.pcb.getPenaltyTime() == 0);
     }
@@ -291,17 +282,15 @@ public class Clock {
         int VA = running.pcb.topRef().getAddress();
         int index = VA / pageSize;
 
-        if (DEBUG_OUT) {
-            System.out.println("checking for out of bound index is:" + index + "\nVirtual Address: " + VA);
-
-        }
         return running.pt.getPageAtIndex(index).valid;
     }
 
+    /* Clock page replacement algorithm */
     void clockAlg(Process process) {
         Reference topRef = process.pcb.topRef();
         int pageNumber = topRef.getAddress() / pageSize;
 
+        /* if there exist free frames, use the one with lowest frame number */
         for (int i = 0; i < frameCount; ++i) {
             if (!bitmap[i]) { // if free
                 Page newFrame = new Page(i);
@@ -310,42 +299,32 @@ public class Clock {
                 bitmap[i] = true; // it is now occupy
                 process.pt.setPageAtIndex(pageNumber, newFrame);
 
-                if(clockStruct.size() > 0){
-                    clockStruct.add(clockPointer, newFrame); // adds to the before the clockptr
-                    clockPointer = (clockPointer + 1)%bitmap.length;
-                }else
+                if (clockStruct.size() > 0) {
+                    // adds to the before the clockptr
+                    clockStruct.add(clockPointer, newFrame); 
+                    clockPointer = (clockPointer + 1) % bitmap.length;
+                } else {
                     clockStruct.add(newFrame);
+                }
                 System.out.print("Free; ");
                 return;
             }
         }
 
+        /* moves the clock pointer,
+         if the ref bit is on turn it off and advances the pointer */
         for (int i = 0; i < clockStruct.size(); ++i) {
-            if (clockStruct.get(clockPointer).referenced) { // means the page was referenced
+            if (clockStruct.get(clockPointer).referenced) {
                 // clear ref bit and advance
                 clockStruct.get(clockPointer).referenced = false;
                 // advances the clockPtr
-                clockPointer = (clockPointer + 1)%bitmap.length;
+                clockPointer = (clockPointer + 1) % bitmap.length;
             } else {
-                // replace with the page at index: page number of page table
-                clockStruct.get(clockPointer).referenced = true;
-                if (clockStruct.get(clockPointer).dirty) { // Dirty
-                    process.pcb.setPenaltyTime(dirtyPagePenalty +
-                            process.pcb.getPenaltyTime());
-                    System.out.print("Dirty; ");
-                } else {
-                    System.out.print("Clean; ");
-                }
-                process.pt.setPageAtIndex(pageNumber, clockStruct.get(clockPointer));
-                clockPointer = (clockPointer + 1)%bitmap.length;
-                return;
+                break; // breaks out if the ref bit is off
             }
         }
 
-        // the hand pointer has move one full cycle, replace the first page
-//        clockStruct.set(clockPointer, process.pt.getPageAtIndex(pageNumber));
-        clockStruct.get(clockPointer).referenced = true;
-
+        // if the clock pointer has move one full cycle, replaces the first page
         if (clockStruct.get(clockPointer).dirty) { // Dirty
             process.pcb.setPenaltyTime(dirtyPagePenalty +
                     process.pcb.getPenaltyTime());
@@ -353,7 +332,14 @@ public class Clock {
         } else {
             System.out.print("Clean; ");
         }
-        process.pt.setPageAtIndex(pageNumber, clockStruct.get(clockPointer));
-        clockPointer = (clockPointer + 1)%bitmap.length;
+        //replaces page, turn the valid bit of the current frame to be replaced off
+        //the replacing page, turn the ref and valid bit on and advances the clock pointer
+        clockStruct.get(clockPointer).valid = false;
+        int frameNumber = clockStruct.get(clockPointer).getFrameNumber();
+        process.pt.getPageAtIndex(pageNumber).valid = true;
+        process.pt.getPageAtIndex(pageNumber).referenced = true;
+        process.pt.getPageAtIndex(pageNumber).setFrameNumber(frameNumber);
+        clockStruct.set(clockPointer, process.pt.getPageAtIndex(pageNumber));
+        clockPointer = (clockPointer + 1) % bitmap.length;
     }
 }

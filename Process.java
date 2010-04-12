@@ -6,5 +6,4 @@ public class Process {
     this.pt = pt;
     this.pcb = pcb;
   }
-
 }
